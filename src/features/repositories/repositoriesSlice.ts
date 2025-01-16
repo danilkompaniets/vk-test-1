@@ -5,18 +5,22 @@ import {RootState} from "@/store.ts";
 
 
 export interface RepositoryState {
-    repositories: Repository[];
+    repositories: {
+        entities: Record<number, Repository>;
+        ids: number[];
+    };
     loading: boolean;
     error: string | null;
-    page: number;
     searchQuery: SearchQuery
 }
 
-const initialState: RepositoryState = {
-    repositories: [],
+export const initialState: RepositoryState = {
+    repositories: {
+        entities: {},
+        ids: []
+    },
     loading: false,
     error: null,
-    page: 1,
     searchQuery: {
         searchTerm: "",
         page: 1,
@@ -30,23 +34,35 @@ const repositorySlice = createSlice({
     name: "repositories",
     initialState,
     reducers: {
-        setRepositories: (state, action: PayloadAction<Repository[]>) => {
-            state.repositories = [...state.repositories, ...action.payload];
+        resetRepositories: (state) => {
+            state.repositories = initialState.repositories
+            state.searchQuery.page = initialState.searchQuery.page
+        },
+        deleteRepository: (state, action: PayloadAction<number>) => {
+            delete state.repositories.entities[action.payload]
+            state.repositories.ids = state.repositories.ids.filter(id => id != action.payload);
+
+        },
+        updateRepository: (state, action: PayloadAction<Repository>) => {
+            state.repositories.entities[action.payload.id] = action.payload
         },
         setSearchQuery(state, action: PayloadAction<SearchQuery>) {
             state.searchQuery = action.payload;
         },
         incrementPage(state) {
-            state.page++;
-        }
+            state.searchQuery.page = state.searchQuery.page + 1;
+        },
     },
 
     extraReducers: builder => {
         builder.addCase(fetchRepositories.pending, (state) => {
             state.loading = true;
         }).addCase(fetchRepositories.fulfilled, (state, action) => {
+            action.payload.map((repo: Repository) => {
+                state.repositories.entities[repo.id] = repo;
+                state.repositories.ids.push(repo.id);
+            })
             state.loading = false
-            state.repositories = [...state.repositories, ...action.payload]
         }).addCase(fetchRepositories.rejected, (state, action) => {
             state.loading = false
             state.error = action.payload as string
@@ -56,5 +72,11 @@ const repositorySlice = createSlice({
 
 
 export const selectRepositories = (state: RootState) => state.repositories;
-export const {setRepositories, setSearchQuery, incrementPage} = repositorySlice.actions
+export const {
+    resetRepositories,
+    deleteRepository,
+    updateRepository,
+    setSearchQuery,
+    incrementPage
+} = repositorySlice.actions
 export default repositorySlice.reducer;

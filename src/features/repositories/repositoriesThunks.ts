@@ -1,27 +1,35 @@
-import {createAsyncThunk} from "@reduxjs/toolkit";
-import {SearchQuery} from "../../../types/types.ts";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { SearchQuery } from "../../../types/types.ts";
 
 export const fetchRepositories = createAsyncThunk(
     "repositories/fetchRepositories",
     async (
-        {searchTerm, page, order, sort}: SearchQuery,
-        {rejectWithValue}
+        { searchTerm, page, order, sort }: SearchQuery,
+        { rejectWithValue }
     ) => {
         try {
-            console.log(searchTerm, page, order, sort);
-            const response = await fetch(
-                `https://api.github.com/search/repositories?q=${searchTerm}&sort=${sort}&order=${order}&page=${page}&per_page=25`
-            );
+            const encodedSearchTerm = encodeURIComponent(searchTerm);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                return rejectWithValue(errorData.message || "Failed to fetch repositories");
-            }
+            const response = await axios.get("https://api.github.com/search/repositories", {
+                params: {
+                    q: encodedSearchTerm,
+                    sort,
+                    order,
+                    page,
+                    per_page: 25,
+                },
+            });
 
-            const data = await response.json();
-            return data.items;
+            return response.data.items;
         } catch (error: any) {
-            return rejectWithValue(error.message || "Something went wrong");
+            if (error.response) {
+                return rejectWithValue(error.response.data.message || "Failed to fetch repositories");
+            } else if (error.request) {
+                return rejectWithValue("No response from the server. Please try again.");
+            } else {
+                return rejectWithValue(error.message || "An unknown error occurred.");
+            }
         }
     }
 );

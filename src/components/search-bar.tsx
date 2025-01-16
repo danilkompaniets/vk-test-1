@@ -4,7 +4,7 @@ import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {useAppDispatch, useAppSelector} from "../../hooks/hooks.ts";
 import {fetchRepositories} from "@/features/repositories/repositoriesThunks.ts";
-import {selectRepositories, setSearchQuery} from "@/features/repositories/repositoriesSlice.ts";
+import {resetRepositories, selectRepositories, setSearchQuery} from "@/features/repositories/repositoriesSlice.ts";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
 import {SearchQuery} from "../../types/types.ts";
 import {orderByOptions, sortByOptions} from "@/lib/constants.ts";
@@ -21,18 +21,24 @@ export const SearchBar = ({
                               containerClassName,
                           }: SearchBarProps) => {
     const dispatch = useAppDispatch();
-    const {page, loading} = useAppSelector(selectRepositories)
+    const {loading, repositories} = useAppSelector(selectRepositories)
     const [searchState, setSearchState] = useState<SearchQuery>({
         searchTerm: "",
-        sort: "",
-        order: "asc",
-        page: page
+        sort: "stars",
+        order: "desc",
+        page: 1,
     })
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        dispatch(setSearchQuery(searchState))
-        dispatch(fetchRepositories(searchState))
+        if (repositories.ids.length === 0) {
+            dispatch(setSearchQuery(searchState))
+            dispatch(fetchRepositories(searchState))
+        } else {
+            dispatch(resetRepositories())
+            dispatch(setSearchQuery(searchState))
+            dispatch(fetchRepositories(searchState))
+        }
     };
 
     return (
@@ -87,7 +93,7 @@ export const SearchBar = ({
                     </SelectContent>
                 </Select>
                 <Select
-                    defaultValue={"asc"}
+                    defaultValue={"desc"}
                     onValueChange={(value) => {
                         setSearchState({
                             searchTerm: searchState.searchTerm,

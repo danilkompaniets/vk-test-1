@@ -1,13 +1,9 @@
 import {RepositoryList} from "@/components/repository-list.tsx";
 import {SearchBar} from "@/components/search-bar.tsx";
-import {useSelector} from "react-redux";
-import {selectRepositories} from "@/features/repositories/repositoriesSlice.ts";
 
 function App() {
-    const {loading} = useSelector(selectRepositories)
-
     return (
-        <div className={"min-h-screen bg-zinc-800"}>
+        <div className={"min-h-screen bg-zinc-800 relative"}>
             <main className={"container mx-auto flex gap-y-4 flex-col items-center"}>
                 <h1 className={"text-center text-white text-2xl mt-12"}>
                     Blazingly Fast Github ⚡️
@@ -23,8 +19,7 @@ function App() {
                     containerClassName="w-full max-w-3xl mb-4"
                 />
 
-                <RepositoryList />
-
+                <RepositoryList/>
             </main>
         </div>
     )

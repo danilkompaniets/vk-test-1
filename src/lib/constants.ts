@@ -1,7 +1,7 @@
 export const sortByOptions = [
-    {name: "Stars", value: "stargazers_count"},
-    {name: "Watchers", value: "watchers_count"},
-    {name: "Forks", value: "forks_count"},
+    {name: "Stars", value: "stars"},
+    {name: "Forks", value: "forks"},
+    {name: "Updated at", value: "updated"}
 ]
 
 export const orderByOptions = [

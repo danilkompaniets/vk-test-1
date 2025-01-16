@@ -1,5 +1,7 @@
 import {Repository} from "../../types/types.ts";
-import {Button, buttonVariants} from "@/components/ui/button.tsx";
+import {buttonVariants} from "@/components/ui/button.tsx";
+import {EditModal} from "@/components/edit-modal.tsx";
+import {DeleteModal} from "@/components/delete-modal.tsx";
 
 interface RepositoryCardProps {
     repository: Repository;
@@ -34,7 +36,7 @@ export const RepositoryCard = ({repository}: RepositoryCardProps) => {
                     <p className={"text-sm flex text-neutral-100"}>
                         <svg xmlns="http://www.w3.org/2000/svg" width={"20"} height={"20"} viewBox="0 0 24 24"
                              fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                              className="icon icon-tabler icons-tabler-outline icon-tabler-git-fork">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <path d="M12 18m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
@@ -53,7 +55,7 @@ export const RepositoryCard = ({repository}: RepositoryCardProps) => {
                     className: "bg-neutral-700/50 w-fit"
                 })}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                          className="">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <path
@@ -63,12 +65,8 @@ export const RepositoryCard = ({repository}: RepositoryCardProps) => {
                 </a>
             </div>
             <div className={"flex flex-col gap-y-2"}>
-                <Button className={"text-xl bg-neutral-800/50 font-semibold"}>
-                    📝 Edit
-                </Button>
-                <Button variant={"destructive"} className={"text-xl bg-red-600/50 font-semibold"}>
-                    🗑️ Delete
-                </Button>
+                <EditModal repository={repository}/>
+                <DeleteModal repositoryId={repository.id}/>
             </div>
         </div>
     )

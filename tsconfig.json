@@ -9,9 +9,13 @@
     }
   ],
   "compilerOptions": {
-    "baseUrl": ".",
+    "allowImportingTsExtensions": true,
+    "baseUrl": "./src",
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["*"]
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx"
   }
 }
